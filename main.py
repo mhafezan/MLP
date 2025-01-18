@@ -1,62 +1,72 @@
+# To suppress TensorFlow logs
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+# Important imports
+import sys
 import tensorflow as tf
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
 import matplotlib.pyplot as plt
+from tensorflow.keras import Input
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 import numpy as np
 
-# Load the MNIST dataset
-(X_train, y_train), (X_test, y_test) = mnist.load_data()
+# To load the MNIST dataset (Trainset size: 60000, Testset size: 10000, image size: 28*28 )
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-# Normalize the input data
-X_train = X_train.astype('float32') / 255
-X_test = X_test.astype('float32') / 255
+# To normalize the input data
+"""Pixel values are initially ranged from 0 to 255.
+Normalization shifts the pixel values to a range of [0,1]"""
+x_train = x_train.astype('float32') / 255
+x_test = x_test.astype('float32') / 255
 
-# Flatten the images
-X_train = X_train.reshape((X_train.shape[0], -1))
-X_test = X_test.reshape((X_test.shape[0], -1))
+# To flatten the images before feeding into the first Dense layer
+x_train = x_train.reshape((x_train.shape[0], -1))
+x_test = x_test.reshape((x_test.shape[0], -1))
 
-# One-hot encode the labels
+# To represent categorical data (It converts integer labels (0, 1, ..., 9) into one-hot encoded vectors)
 y_train = to_categorical(y_train, 10)
 y_test = to_categorical(y_test, 10)
 
-# Create the model
+# To create an instance of the Sequential model. It allows for building a linear stack of layers
 model = Sequential()
-# Add input layer and first hidden layer
-model.add(Dense(512, input_shape=(784,), activation='relu'))
-# Add second hidden layer
-model.add(Dense(256, activation='relu'))
-# Add output layer
-model.add(Dense(10, activation='softmax'))
+# To define layers in order
+model.add(Input(shape=(784,)))             # To add the input layer
+model.add(Dense(512, activation='relu'))   # To add the first hidden layer
+model.add(Dense(256, activation='relu'))   # To add second hidden layer
+model.add(Dense(10, activation='softmax')) # To add output layer
 
-# Compile the model
+# To define the model configuring Optimizer, Loss function, and Performance Metric 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-# Summarize the model
 model.summary()
 
-# Train the model
-history = model.fit(X_train, y_train, epochs=10, batch_size=128, validation_split=0.2)
+# To train the model on trainset specifying Epochs, Batch Size, and Validation Percentage (20% here)
+history = model.fit(x_train, y_train, epochs=10, batch_size=128, validation_split=0.2)
 
-# Evaluate the model on the test set
-test_loss, test_acc = model.evaluate(X_test, y_test)
-print(f"Test accuracy: {test_acc}")
+# To evaluate the trained model on testset
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f"Test Accuracy: {test_acc:.2f}\n")
 
-# Save the model
-model.save('mnist_mlp_model.h5')
+# To save the model
+model.save('./weights/mnist_mlp_model.keras')
 
-# Load the Model to use for Prediction
-loaded_model = tf.keras.models.load_model('mnist_mlp_model.h5')
+# To load the pre-trained model again to use for Prediction
+pretrained_model = tf.keras.models.load_model('./weights/mnist_mlp_model.keras')
 
-# Predict on a test sample (Pick a test sample)
-sample = X_test[0].reshape(1, -1)
+# To predict on a specific test sample
+"""As the first layer is a FC/Dense layer, we should pass a flatten image to it"""
+sample = x_test[0].reshape(1, -1)
 
-# Predict the class
-prediction = loaded_model.predict(sample)
+# To predict the class for the sample
+prediction = pretrained_model.predict(sample)
 predicted_class = np.argmax(prediction, axis=1)
-print(f"Predicted class: {predicted_class}")
+print(f"Predicted class is: {predicted_class}\n")
 
-# Display the test sample
-plt.imshow(X_test[0].reshape(28, 28), cmap='gray')
+# To display the real sample
+plt.imshow(x_test[0].reshape(28, 28), cmap='gray')
 plt.title(f"Predicted class: {predicted_class[0]}")
 plt.show()
+
+sys.exit(0)
