@@ -38,8 +38,12 @@ model.add(Dense(512, activation='relu'))   # To add the first hidden layer
 model.add(Dense(256, activation='relu'))   # To add second hidden layer
 model.add(Dense(10, activation='softmax')) # To add output layer
 
-# To define the model configuring Optimizer, Loss function, and Performance Metric 
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+# To define the model configuring Optimizer, Loss function, and Performance Metric
+optimizer = 'adam'
+# optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
+# optimizer = optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.01)
+
+model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 model.summary()
 
 # To train the model on trainset specifying Epochs, Batch Size, and Validation Percentage (20% here)
@@ -49,14 +53,14 @@ history = model.fit(x_train, y_train, epochs=10, batch_size=128, validation_spli
 test_loss, test_acc = model.evaluate(x_test, y_test)
 print(f"Test Accuracy: {test_acc:.2f}\n")
 
+"""
 # To save the model
 model.save('./weights/mnist_mlp_model.keras')
 
 # To load the pre-trained model again to use for Prediction
 pretrained_model = tf.keras.models.load_model('./weights/mnist_mlp_model.keras')
 
-# To predict on a specific test sample
-"""As the first layer is a FC/Dense layer, we should pass a flatten image to it"""
+# To predict on a specific test sample (As the first layer is a FC/Dense layer, we should pass a flatten image to it)
 sample = x_test[0].reshape(1, -1)
 
 # To predict the class for the sample
@@ -68,5 +72,7 @@ print(f"Predicted class is: {predicted_class}\n")
 plt.imshow(x_test[0].reshape(28, 28), cmap='gray')
 plt.title(f"Predicted class: {predicted_class[0]}")
 plt.show()
+
+"""
 
 sys.exit(0)
