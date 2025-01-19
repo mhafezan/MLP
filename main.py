@@ -40,8 +40,8 @@ model.add(Dense(10, activation='softmax')) # To add output layer
 
 # To define the model configuring Optimizer, Loss function, and Performance Metric
 optimizer = 'adam'
-# optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
-# optimizer = optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.01)
+# optimizer = optimizer=tf.keras.optimizers.Adagrad(learning_rate=0.1)
+# optimizer = tf.keras.optimizers.SGD(learning_rate=0.1)
 
 model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 model.summary()
@@ -51,7 +51,7 @@ history = model.fit(x_train, y_train, epochs=10, batch_size=128, validation_spli
 
 # To evaluate the trained model on testset
 test_loss, test_acc = model.evaluate(x_test, y_test)
-print(f"Test Accuracy: {test_acc:.2f}\n")
+print(f"Test Accuracy: {test_acc*100:.2f}\n")
 
 """
 # To save the model
