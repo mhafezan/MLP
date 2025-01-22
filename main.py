@@ -47,7 +47,7 @@ model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['ac
 model.summary()
 
 # To train the model on trainset specifying Epochs, Batch Size, and Validation Percentage (20% here)
-history = model.fit(x_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
+history = model.fit(x_train, y_train, epochs=10, batch_size=128, validation_split=0.2)
 
 # To evaluate the trained model on testset
 test_loss, test_acc = model.evaluate(x_test, y_test)
